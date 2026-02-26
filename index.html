@@ -87,19 +87,29 @@
         }
 
         .source-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             border: 1px solid #333;
             background: #141414;
             color: #999;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 0.8rem;
             flex: 1;
-            min-width: 60px;
-            max-width: 100px;
+            min-width: 70px;
+            max-width: 120px;
+        }
+
+        @media (max-width: 480px) {
+            .sources {
+                gap: 0.4rem;
+            }
+            .source-btn {
+                padding: 0.4rem 0.3rem;
+                font-size: 0.7rem;
+                min-width: 0;
+                max-width: none;
+            }
         }
 
         .source-btn:hover,
@@ -420,12 +430,12 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn active" onclick="switchSource('wujin')">无尽</button>
-            <button class="source-btn" onclick="switchSource('ty')">天涯</button>
-            <button class="source-btn" onclick="switchSource('baidu')">百度</button>
-            <button class="source-btn" onclick="switchSource('wolong')">卧龙</button>
-            <button class="source-btn" onclick="switchSource('lzm3u8')">量子</button>
-            <button class="source-btn" onclick="switchSource('ffzy')">非凡</button>
+            <button class="source-btn active" onclick="switchSource('wujin')">视频源 1</button>
+            <button class="source-btn" onclick="switchSource('ty')">视频源 2</button>
+            <button class="source-btn" onclick="switchSource('baidu')">视频源 3</button>
+            <button class="source-btn" onclick="switchSource('wolong')">视频源 4</button>
+            <button class="source-btn" onclick="switchSource('lzm3u8')">视频源 5</button>
+            <button class="source-btn" onclick="switchSource('ffzy')">视频源 6</button>
         </div>
         
         <div id="videoList" class="video-grid">
