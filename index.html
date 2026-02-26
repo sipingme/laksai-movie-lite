@@ -323,30 +323,59 @@
             }
         }
         
+        // 代理服务列表
+        const proxyServices = [
+            'https://api.codetabs.com/v1/proxy?quest=',
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url='
+        ];
+        
         async function searchVideos(keyword) {
             if (!keyword.trim()) return;
             
             const videoList = document.getElementById('videoList');
-            videoList.innerHTML = '<div class="loading">搜索中...</div>';
+            videoList.innerHTML = '<div class="loading">正在搜索 ' + sources[currentSource].name + '...</div>';
             
-            try {
-                // 使用 allorigins 代理解决跨域
-                const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const searchUrl = sources[currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
-                
-                const response = await fetch(proxyUrl + encodeURIComponent(searchUrl));
-                const data = await response.json();
-                
-                if (data.contents) {
-                    const jsonData = JSON.parse(data.contents);
-                    displayVideos(jsonData.list || []);
-                } else {
-                    videoList.innerHTML = '<div class="loading">未找到相关内容</div>';
+            const searchUrl = sources[currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
+            let lastError = null;
+            
+            // 依次尝试不同的代理服务
+            for (let i = 0; i < proxyServices.length; i++) {
+                try {
+                    const proxyUrl = proxyServices[i];
+                    const response = await fetch(proxyUrl + encodeURIComponent(searchUrl), {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    
+                    const jsonData = await response.json();
+                    
+                    if (jsonData && jsonData.list && jsonData.list.length > 0) {
+                        displayVideos(jsonData.list);
+                        return; // 成功，直接返回
+                    } else if (jsonData && jsonData.data && jsonData.data.list) {
+                        displayVideos(jsonData.data.list);
+                        return;
+                    } else {
+                        videoList.innerHTML = '<div class="loading">未找到相关内容，请尝试：1. 更换关键词 2. 切换其他视频源</div>';
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Proxy ' + (i+1) + ' failed:', error);
+                    lastError = error;
+                    // 继续尝试下一个代理
                 }
-            } catch (error) {
-                console.error('Search error:', error);
-                videoList.innerHTML = '<div class="loading">搜索失败，请尝试其他视频源</div>';
             }
+            
+            // 所有代理都失败了
+            console.error('All proxies failed:', lastError);
+            videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
         }
         
         function displayVideos(videos) {
