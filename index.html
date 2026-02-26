@@ -48,7 +48,9 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #7b1fa2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -78,7 +80,7 @@
         }
 
         .search-box input:focus {
-            border-color: #7b1fa2;
+            border-color: #764ba2;
             background: #1a1a1a;
         }
 
@@ -139,8 +141,8 @@
 
         .source-btn:hover,
         .source-btn.active {
-            background: #7b1fa2;
-            border-color: #7b1fa2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
             color: #fff;
         }
         
@@ -187,8 +189,8 @@
 
         .video-card:hover {
             transform: translateY(-2px);
-            border-color: #7b1fa2;
-            box-shadow: 0 4px 20px rgba(255,61,0,0.3);
+            border-color: #764ba2;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.3);
         }
 
         .video-card:active {
@@ -235,7 +237,7 @@
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 2;
-            background: #7b1fa2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             width: 48px;
             height: 48px;
             border-radius: 2px;
@@ -254,7 +256,7 @@
             position: absolute;
             top: 8px;
             right: 8px;
-            background: #7b1fa2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
             padding: 3px 8px;
             border-radius: 2px;
@@ -336,7 +338,7 @@
             width: 40px;
             height: 40px;
             border: 3px solid #222;
-            border-top-color: #7b1fa2;
+            border-top-color: #764ba2;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
@@ -406,8 +408,8 @@
         }
 
         .episode-btn:hover {
-            background: #7b1fa2;
-            border-color: #7b1fa2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
             color: #fff;
         }
 
@@ -417,8 +419,8 @@
 
         /* 播放器返回按钮悬停效果 */
         button[style*="background: #141414"]:hover {
-            background: #7b1fa2 !important;
-            border-color: #7b1fa2 !important;
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            border-color: transparent !important;
             color: #fff !important;
         }
         
@@ -806,7 +808,7 @@
                     <div style="display: flex; gap: 10px; align-items: center;">
                         ${(!isM3U8 && !isMP4) ? `
                         <span style="color: #666; font-size: 12px;">线路:</span>
-                        <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: #7b1fa2; border: none; color: #fff; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
+                        <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
                         <button onclick="switchParser(1)" id="parser1" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路2</button>
                         <button onclick="switchParser(2)" id="parser2" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路3</button>
                         ` : ''}
@@ -862,9 +864,9 @@
             for (let i = 0; i < 3; i++) {
                 const btn = document.getElementById('parser' + i);
                 if (btn) {
-                    btn.style.background = i === index ? '#7b1fa2' : '#141414';
-                    btn.style.color = i === index ? '#000' : '#999';
-                    btn.style.borderColor = i === index ? '#7b1fa2' : '#333';
+                    btn.style.background = i === index ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#141414';
+                    btn.style.color = i === index ? '#fff' : '#999';
+                    btn.style.borderColor = i === index ? 'transparent' : '#333';
                     btn.style.fontWeight = i === index ? 'bold' : 'normal';
                 }
             }
