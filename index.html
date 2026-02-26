@@ -81,22 +81,25 @@
         
         .sources {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-        
+
         .source-btn {
-            padding: 0.5rem 1.5rem;
+            padding: 0.5rem 1rem;
             border: 1px solid #333;
             background: #141414;
             color: #999;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            flex: 1;
+            min-width: 60px;
+            max-width: 100px;
         }
 
         .source-btn:hover,
@@ -121,8 +124,19 @@
 
         @media (max-width: 480px) {
             .video-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.8rem;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.6rem;
+            }
+            .video-info {
+                padding: 0.5rem;
+            }
+            .video-title {
+                font-size: 0.75rem;
+                min-height: 1.9rem;
+                -webkit-line-clamp: 1;
+            }
+            .video-meta {
+                font-size: 0.65rem;
             }
         }
         
@@ -406,10 +420,12 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn active" onclick="switchSource('wujin')">无尽资源</button>
-            <button class="source-btn" onclick="switchSource('ty')">天涯资源</button>
-            <button class="source-btn" onclick="switchSource('baidu')">百度云盘</button>
-            <button class="source-btn" onclick="switchSource('wolong')">卧龙资源</button>
+            <button class="source-btn active" onclick="switchSource('wujin')">无尽</button>
+            <button class="source-btn" onclick="switchSource('ty')">天涯</button>
+            <button class="source-btn" onclick="switchSource('baidu')">百度</button>
+            <button class="source-btn" onclick="switchSource('wolong')">卧龙</button>
+            <button class="source-btn" onclick="switchSource('lzm3u8')">量子</button>
+            <button class="source-btn" onclick="switchSource('ffzy')">非凡</button>
         </div>
         
         <div id="videoList" class="video-grid">
@@ -440,6 +456,16 @@
                 name: '卧龙资源',
                 search: 'https://collect.wolongzyw.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
                 detail: 'https://collect.wolongzyw.com/api.php/provide/vod/?ac=videolist&ids={id}'
+            },
+            lzm3u8: {
+                name: '量子资源',
+                search: 'https://cj.lziapi.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://cj.lziapi.com/api.php/provide/vod/?ac=videolist&ids={id}'
+            },
+            ffzy: {
+                name: '非凡资源',
+                search: 'http://ffzy1.tv/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'http://ffzy1.tv/api.php/provide/vod/?ac=videolist&ids={id}'
             }
         };
         
