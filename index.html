@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js"></script>
     <title>LibreTV Lite - 免费在线影视</title>
     <style>
         * {
@@ -437,11 +441,15 @@
         }
         
         function showPlayerModal(videoUrl, title) {
-            // 移除旧的弹窗（如果存在）
+            // 移除旧的弹窗
             const oldModal = document.getElementById('playerOverlay');
             if (oldModal) oldModal.remove();
             
-            // 创建新的播放器弹窗
+            // 判断视频类型
+            const isM3U8 = videoUrl.toLowerCase().includes('.m3u8') || videoUrl.includes('m3u8');
+            const isMP4 = videoUrl.toLowerCase().includes('.mp4');
+            
+            // 创建播放器弹窗
             const modal = document.createElement('div');
             modal.id = 'playerOverlay';
             modal.style.cssText = `
@@ -450,68 +458,129 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0,0,0,0.95);
+                background: #000;
                 z-index: 9999;
                 display: flex;
                 flex-direction: column;
             `;
             
-            modal.innerHTML = `
-                <div style="padding: 15px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #fff; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">${title || '正在播放'}</span>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="changeLine(0)" id="line0" style="padding: 5px 12px; background: #00d4ff; border: none; color: #000; border-radius: 4px; cursor: pointer; font-size: 12px;">线路1</button>
-                        <button onclick="changeLine(1)" id="line1" style="padding: 5px 12px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路2</button>
-                        <button onclick="changeLine(2)" id="line2" style="padding: 5px 12px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路3</button>
-                        <button onclick="closePlayer()" style="padding: 5px 15px; background: #ff4444; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;">✕ 关闭</button>
+            if (isM3U8 || isMP4) {
+                // 原生播放器（m3u8/mp4）
+                modal.innerHTML = `
+                    <div style="padding: 15px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <span style="color: #fff; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;">${title || '正在播放'}</span>
+                        <button onclick="closePlayer()" style="padding: 8px 20px; background: #ff4444; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;">✕ 关闭</button>
                     </div>
-                </div>
-                <div style="flex: 1; position: relative;">
-                    <iframe id="videoFrame" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // 保存视频URL供切换线路使用
-            window.currentVideoUrl = videoUrl;
-            window.currentLine = 0;
-            
-            // 加载第一个线路
-            loadVideoLine(0);
+                    <div style="flex: 1; background: #000; display: flex; align-items: center; justify-content: center;">
+                        <video id="nativePlayer" controls autoplay style="width: 100%; height: 100%; max-height: 100vh;"></video>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                const video = document.getElementById('nativePlayer');
+                
+                if (isM3U8 && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    // 使用 hls.js 播放 m3u8
+                    const hls = new Hls({
+                        maxBufferLength: 30,
+                        maxMaxBufferLength: 600
+                    });
+                    hls.loadSource(videoUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        video.play();
+                    });
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            alert('视频加载失败，请尝试其他资源');
+                        }
+                    });
+                } else {
+                    // 直接播放
+                    video.src = videoUrl;
+                    video.play().catch(e => {
+                        console.error('Play error:', e);
+                        alert('视频自动播放被阻止，请手动点击播放按钮');
+                    });
+                }
+            } else {
+                // 外部链接使用 iframe 播放器
+                modal.innerHTML = `
+                    <div style="padding: 15px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <span style="color: #fff; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">${title || '正在播放'}</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <span style="color: #999; font-size: 12px;">线路:</span>
+                            <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: #00d4ff; border: none; color: #000; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
+                            <button onclick="switchParser(1)" id="parser1" style="padding: 6px 14px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路2</button>
+                            <button onclick="switchParser(2)" id="parser2" style="padding: 6px 14px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路3</button>
+                            <button onclick="closePlayer()" style="padding: 8px 20px; background: #ff4444; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;">✕ 关闭</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1; position: relative;">
+                        <iframe id="parserFrame" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+                        <div id="parserLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 14px;">加载中...</div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                window.currentVideoUrl = videoUrl;
+                window.currentParser = 0;
+                window.parserList = [
+                    'https://jx.m3u8.tv/jiexi/?url=',
+                    'https://jsap.attakids.com/?url=',
+                    'https://jx.aidouer.net/?url='
+                ];
+                
+                loadParser(0);
+            }
         }
         
-        function loadVideoLine(lineIndex) {
-            const parsers = [
-                'https://jx.m3u8.tv/jiexi/?url=',
-                'https://jsap.attakids.com/?url=',
-                'https://jx.aidouer.net/?url='
-            ];
+        function switchParser(index) {
+            loadParser(index);
+        }
+        
+        function loadParser(index) {
+            if (!window.currentVideoUrl) return;
             
-            const frame = document.getElementById('videoFrame');
-            if (frame && window.currentVideoUrl) {
-                frame.src = parsers[lineIndex] + encodeURIComponent(window.currentVideoUrl);
-            }
+            const frame = document.getElementById('parserFrame');
+            const loading = document.getElementById('parserLoading');
             
             // 更新按钮样式
             for (let i = 0; i < 3; i++) {
-                const btn = document.getElementById('line' + i);
+                const btn = document.getElementById('parser' + i);
                 if (btn) {
-                    btn.style.background = i === lineIndex ? '#00d4ff' : '#333';
-                    btn.style.color = i === lineIndex ? '#000' : '#fff';
+                    btn.style.background = i === index ? '#00d4ff' : '#333';
+                    btn.style.color = i === index ? '#000' : '#fff';
+                    btn.style.fontWeight = i === index ? 'bold' : 'normal';
                 }
             }
             
-            window.currentLine = lineIndex;
-        }
-        
-        function changeLine(index) {
-            loadVideoLine(index);
+            window.currentParser = index;
+            
+            // 显示加载
+            if (loading) loading.style.display = 'block';
+            
+            // 加载解析页面
+            const parserUrl = window.parserList[index] + encodeURIComponent(window.currentVideoUrl);
+            frame.src = parserUrl;
+            
+            // 3秒后隐藏加载提示
+            setTimeout(() => {
+                if (loading) loading.style.display = 'none';
+            }, 3000);
         }
         
         function closePlayer() {
             const modal = document.getElementById('playerOverlay');
             if (modal) {
+                // 停止所有视频播放
+                const videos = modal.querySelectorAll('video');
+                videos.forEach(v => {
+                    v.pause();
+                    v.src = '';
+                });
+                const iframes = modal.querySelectorAll('iframe');
+                iframes.forEach(f => f.src = '');
                 modal.remove();
             }
             window.currentVideoUrl = null;
