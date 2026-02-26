@@ -547,7 +547,7 @@
             modal.innerHTML = `
                 <div style="padding: 15px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <button onclick="closePlayer()" style="padding: 8px 15px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                        <button onclick="closePlayer(true)" style="padding: 8px 15px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
                             ← 返回
                         </button>
                         <span style="color: #fff; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw;">${title || '正在播放'}</span>
@@ -632,7 +632,7 @@
             }, 3000);
         }
         
-        function closePlayer() {
+        function closePlayer(fromButton = false) {
             const modal = document.getElementById('playerOverlay');
             if (modal) {
                 // 停止所有视频播放
@@ -646,10 +646,10 @@
                 modal.remove();
             }
             window.currentVideoUrl = null;
-            
-            // 清除历史记录中的 player 状态
-            if (location.hash === '#player') {
-                history.back();
+
+            // 如果是点击返回按钮，需要清除 hash 但不触发 popstate
+            if (fromButton && location.hash === '#player') {
+                history.pushState(null, '', location.pathname + location.search);
             }
         }
         
@@ -664,9 +664,7 @@
         window.addEventListener('popstate', function(e) {
             const modal = document.getElementById('playerOverlay');
             if (modal) {
-                closePlayer();
-                // 阻止默认返回行为
-                e.preventDefault();
+                closePlayer(false);
             }
         });
     </script>
