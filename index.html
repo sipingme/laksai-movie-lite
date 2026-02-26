@@ -41,7 +41,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #9c27b0;
+            color: #7b1fa2;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -66,7 +66,7 @@
         }
 
         .search-box input:focus {
-            border-color: #9c27b0;
+            border-color: #7b1fa2;
             background: #1a1a1a;
         }
 
@@ -102,9 +102,9 @@
 
         .source-btn:hover,
         .source-btn.active {
-            background: #9c27b0;
-            border-color: #9c27b0;
-            color: #000;
+            background: #7b1fa2;
+            border-color: #7b1fa2;
+            color: #fff;
         }
         
         .video-grid {
@@ -139,7 +139,7 @@
 
         .video-card:hover {
             transform: translateY(-2px);
-            border-color: #9c27b0;
+            border-color: #7b1fa2;
             box-shadow: 0 4px 20px rgba(255,61,0,0.3);
         }
 
@@ -187,14 +187,14 @@
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 2;
-            background: #9c27b0;
+            background: #7b1fa2;
             width: 48px;
             height: 48px;
             border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
+            color: #fff;
             padding-left: 3px;
         }
 
@@ -206,8 +206,8 @@
             position: absolute;
             top: 8px;
             right: 8px;
-            background: #9c27b0;
-            color: #000;
+            background: #7b1fa2;
+            color: #fff;
             padding: 3px 8px;
             border-radius: 2px;
             font-size: 0.75rem;
@@ -288,7 +288,7 @@
             width: 40px;
             height: 40px;
             border: 3px solid #222;
-            border-top-color: #9c27b0;
+            border-top-color: #7b1fa2;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
@@ -358,9 +358,9 @@
         }
 
         .episode-btn:hover {
-            background: #9c27b0;
-            border-color: #9c27b0;
-            color: #000;
+            background: #7b1fa2;
+            border-color: #7b1fa2;
+            color: #fff;
         }
 
         .episode-btn:active {
@@ -369,9 +369,9 @@
 
         /* 播放器返回按钮悬停效果 */
         button[style*="background: #141414"]:hover {
-            background: #9c27b0 !important;
-            border-color: #9c27b0 !important;
-            color: #000 !important;
+            background: #7b1fa2 !important;
+            border-color: #7b1fa2 !important;
+            color: #fff !important;
         }
         
         @media (max-width: 768px) {
@@ -746,7 +746,7 @@
                     <div style="display: flex; gap: 10px; align-items: center;">
                         ${(!isM3U8 && !isMP4) ? `
                         <span style="color: #666; font-size: 12px;">线路:</span>
-                        <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: #9c27b0; border: none; color: #000; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
+                        <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: #7b1fa2; border: none; color: #fff; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
                         <button onclick="switchParser(1)" id="parser1" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路2</button>
                         <button onclick="switchParser(2)" id="parser2" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路3</button>
                         ` : ''}
@@ -802,9 +802,9 @@
             for (let i = 0; i < 3; i++) {
                 const btn = document.getElementById('parser' + i);
                 if (btn) {
-                    btn.style.background = i === index ? '#9c27b0' : '#141414';
+                    btn.style.background = i === index ? '#7b1fa2' : '#141414';
                     btn.style.color = i === index ? '#000' : '#999';
-                    btn.style.borderColor = i === index ? '#9c27b0' : '#333';
+                    btn.style.borderColor = i === index ? '#7b1fa2' : '#333';
                     btn.style.fontWeight = i === index ? 'bold' : 'normal';
                 }
             }
