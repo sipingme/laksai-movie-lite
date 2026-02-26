@@ -260,10 +260,10 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn active" onclick="switchSource('heimuer')">黑莓影视</button>
-            <button class="source-btn" onclick="switchSource('ffzy')">非凡影视</button>
-            <button class="source-btn" onclick="switchSource('zuida')">最大资源</button>
-            <button class="source-btn" onclick="switchSource('kuaikan')">快看影视</button>
+            <button class="source-btn active" onclick="switchSource('wujin')">无尽资源</button>
+            <button class="source-btn" onclick="switchSource('ty')">天涯资源</button>
+            <button class="source-btn" onclick="switchSource('baidu')">百度云盘</button>
+            <button class="source-btn" onclick="switchSource('wolong')">卧龙资源</button>
         </div>
         
         <div id="videoList" class="video-grid">
@@ -279,28 +279,28 @@
     </div>
 
     <script>
-        let currentSource = 'heimuer';
+        let currentSource = 'wujin';
         
         const sources = {
-            heimuer: {
-                name: '黑莓影视',
-                search: 'https://json.heimuer.xyz/api.php/provide/vod/?ac=videolist&wd={keyword}',
-                detail: 'https://json.heimuer.xyz/api.php/provide/vod/?ac=videolist&ids={id}'
+            wujin: {
+                name: '无尽资源',
+                search: 'https://api.wujinapi.me/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://api.wujinapi.me/api.php/provide/vod/?ac=videolist&ids={id}'
             },
-            ffzy: {
-                name: '非凡影视', 
-                search: 'http://ffzy5.tv/api.php/provide/vod/?ac=videolist&wd={keyword}',
-                detail: 'http://ffzy5.tv/api.php/provide/vod/?ac=videolist&ids={id}'
+            ty: {
+                name: '天涯资源',
+                search: 'https://tycbo.tycng.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://tycbo.tycng.com/api.php/provide/vod/?ac=videolist&ids={id}'
             },
-            zuida: {
-                name: '最大资源',
-                search: 'http://www.zuidazy5.net/api.php/provide/vod/?ac=videolist&wd={keyword}',
-                detail: 'http://www.zuidazy5.net/api.php/provide/vod/?ac=videolist&ids={id}'
+            baidu: {
+                name: '百度云盘',
+                search: 'https://api.apibdzy.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://api.apibdzy.com/api.php/provide/vod/?ac=videolist&ids={id}'
             },
-            kuaikan: {
-                name: '快看影视',
-                search: 'https://kuaikan-api.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
-                detail: 'https://kuaikan-api.com/api.php/provide/vod/?ac=videolist&ids={id}'
+            wolong: {
+                name: '卧龙资源',
+                search: 'https://collect.wolongzyw.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://collect.wolongzyw.com/api.php/provide/vod/?ac=videolist&ids={id}'
             }
         };
         
