@@ -542,8 +542,27 @@
                 return;
             }
 
-            // 解析播放链接 (格式: 第1集$链接#第2集$链接)
-            const episodes = playUrl.split('#').filter(ep => ep.trim());
+            console.log('Original playUrl:', playUrl.substring(0, 200));
+
+            // 尝试多种分隔符解析播放链接
+            // 格式1: 第1集$链接#第2集$链接
+            // 格式2: 第1集$链接$$$第2集$链接
+            // 格式3: 第1集$链接\n第2集$链接
+            let episodes = [];
+
+            if (playUrl.includes('#')) {
+                episodes = playUrl.split('#');
+            } else if (playUrl.includes('$$$')) {
+                episodes = playUrl.split('$$$');
+            } else if (playUrl.includes('\n')) {
+                episodes = playUrl.split('\n');
+            } else {
+                // 没有分隔符，尝试按 $ 分割
+                episodes = [playUrl];
+            }
+
+            episodes = episodes.filter(ep => ep.trim());
+            console.log('Split episodes:', episodes.length, episodes[0]?.substring(0, 100));
 
             if (episodes.length === 0) {
                 alert('播放链接解析失败');
@@ -551,14 +570,24 @@
             }
 
             // 解析每一集
-            const parsedEpisodes = episodes.map(ep => {
-                const match = ep.match(/^(.+?)\$(.+?)(?:\||$)/);
+            const parsedEpisodes = episodes.map((ep, index) => {
+                ep = ep.trim();
+                // 尝试匹配 集名$链接 格式
+                const match = ep.match(/^(.+?)\$(.+)$/);
                 if (match) {
                     return { name: match[1].trim(), url: match[2].trim() };
-                } else {
-                    return { name: '正片', url: ep.trim() };
+                } else if (ep.includes('$')) {
+                    // 有$但格式不对，尝试简单分割
+                    const parts = ep.split('$');
+                    if (parts.length >= 2) {
+                        return { name: parts[0].trim() || `第${index + 1}集`, url: parts[parts.length - 1].trim() };
+                    }
                 }
+                // 没有$号，整个作为链接
+                return { name: `第${index + 1}集`, url: ep };
             }).filter(ep => ep.url);
+
+            console.log('Parsed episodes:', parsedEpisodes.length, parsedEpisodes);
 
             if (parsedEpisodes.length === 0) {
                 alert('播放链接解析失败');
@@ -597,9 +626,11 @@
 
             const episodesHtml = episodes.map((ep, index) => `
                 <button onclick="playEpisode(${index})" class="episode-btn" data-index="${index}">
-                    ${ep.name}
+                    ${ep.name || `第${index + 1}集`}
                 </button>
             `).join('');
+
+            console.log('Generated HTML buttons:', episodes.length);
 
             modal.innerHTML = `
                 <div style="padding: 15px 20px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
@@ -612,9 +643,7 @@
                     </div>
                 </div>
                 <div style="flex: 1; padding: 20px; overflow-y: auto;">
-                    <div class="episode-grid">
-                        ${episodesHtml}
-                    </div>
+                    ${episodesHtml ? `<div class="episode-grid">${episodesHtml}</div>` : '<div style="color: #888; text-align: center; padding: 50px;">暂无集数信息</div>'}
                 </div>
             `;
 
