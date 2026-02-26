@@ -432,151 +432,89 @@
                 return;
             }
             
-            // 判断视频类型
-            const isM3U8 = videoUrl.includes('.m3u8') || videoUrl.includes('m3u8');
-            const isMP4 = videoUrl.includes('.mp4');
-            
-            // 直接使用原生播放器
-            if (isM3U8 || isMP4) {
-                openNativePlayer(videoUrl, title);
-            } else {
-                // 使用第三方解析服务
-                openIframePlayer(videoUrl, title);
-            }
+            // 显示播放器弹窗
+            showPlayerModal(videoUrl, title);
         }
         
-        // 原生播放器（支持 m3u8/mp4）
-        function openNativePlayer(videoUrl, title) {
-            const modal = document.getElementById('playerModal');
-            const player = document.getElementById('videoPlayer');
+        function showPlayerModal(videoUrl, title) {
+            // 移除旧的弹窗（如果存在）
+            const oldModal = document.getElementById('playerOverlay');
+            if (oldModal) oldModal.remove();
             
-            // 使用 hls.js 播放 m3u8
-            if (videoUrl.includes('.m3u8') || videoUrl.includes('m3u8')) {
-                player.srcdoc = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-                        <style>
-                            body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
-                            video { width: 100%; height: 100%; max-height: 100vh; }
-                        </style>
-                    </head>
-                    <body>
-                        <video id="video" controls autoplay></video>
-                        <script>
-                            var video = document.getElementById('video');
-                            if (Hls.isSupported()) {
-                                var hls = new Hls();
-                                hls.loadSource('${videoUrl}');
-                                hls.attachMedia(video);
-                                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                                    video.play();
-                                });
-                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                                video.src = '${videoUrl}';
-                                video.addEventListener('loadedmetadata', function() {
-                                    video.play();
-                                });
-                            }
-                        </script>
-                    </body>
-                    </html>
-                `;
-            } else {
-                // 直接播放 mp4
-                player.srcdoc = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
-                            video { width: 100%; height: 100%; max-height: 100vh; }
-                        </style>
-                    </head>
-                    <body>
-                        <video src="${videoUrl}" controls autoplay style="width:100%;height:100%;"></video>
-                    </body>
-                    </html>
-                `;
-            }
-            
-            modal.classList.add('active');
-        }
-        
-        // iframe 播放器（多线路）
-        function openIframePlayer(videoUrl, title) {
-            // 多个解析服务
-            const parsers = [
-                `https://jx.m3u8.tv/jiexi/?url=${encodeURIComponent(videoUrl)}`,
-                `https://jsap.attakids.com/?url=${encodeURIComponent(videoUrl)}`,
-                `https://jx.aidouer.net/?url=${encodeURIComponent(videoUrl)}`,
-                `https://www.yemu.xyz/?url=${encodeURIComponent(videoUrl)}`
-            ];
-            
-            const modal = document.getElementById('playerModal');
-            const player = document.getElementById('videoPlayer');
-            
-            // 创建一个包含多个解析选项的播放器
-            player.srcdoc = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <style>
-                        * { margin: 0; padding: 0; box-sizing: border-box; }
-                        body { background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
-                        .header { padding: 10px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center; }
-                        .title { font-size: 16px; }
-                        .sources { display: flex; gap: 10px; padding: 10px 20px; background: #16213e; overflow-x: auto; }
-                        .source-btn { padding: 8px 16px; background: #333; border: none; color: #fff; cursor: pointer; border-radius: 4px; white-space: nowrap; }
-                        .source-btn:hover, .source-btn.active { background: #00d4ff; }
-                        .player-container { flex: 1; position: relative; }
-                        iframe { width: 100%; height: 100%; border: none; }
-                        .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; }
-                        .error-msg a { color: #00d4ff; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div class="title">${title}</div>
-                        <div style="font-size: 12px; color: #999;">如无法播放请切换线路</div>
-                    </div>
-                    <div class="sources">
-                        <button class="source-btn active" onclick="switchSource(0)">线路1</button>
-                        <button class="source-btn" onclick="switchSource(1)">线路2</button>
-                        <button class="source-btn" onclick="switchSource(2)">线路3</button>
-                        <button class="source-btn" onclick="switchSource(3)">线路4</button>
-                    </div>
-                    <div class="player-container">
-                        <iframe id="playerFrame" src="${parsers[0]}" allowfullscreen></iframe>
-                        <div id="errorMsg" class="error-msg" style="display:none;">
-                            <p>当前线路无法播放</p>
-                            <p>请尝试切换其他线路</p>
-                            <p style="margin-top: 10px; font-size: 12px; color: #999;">或直接访问: <a href="${videoUrl}" target="_blank">原始链接</a></p>
-                        </div>
-                    </div>
-                    <script>
-                        const parsers = ${JSON.stringify(parsers)};
-                        let currentIndex = 0;
-                        
-                        function switchSource(index) {
-                            currentIndex = index;
-                            document.querySelectorAll('.source-btn').forEach((btn, i) => {
-                                btn.classList.toggle('active', i === index);
-                            });
-                            document.getElementById('playerFrame').src = parsers[index];
-                        }
-                        
-                        // 检测加载失败
-                        document.getElementById('playerFrame').onerror = function() {
-                            document.getElementById('errorMsg').style.display = 'block';
-                        };
-                    </script>
-                </body>
-                </html>
+            // 创建新的播放器弹窗
+            const modal = document.createElement('div');
+            modal.id = 'playerOverlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.95);
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
             `;
             
-            modal.classList.add('active');
+            modal.innerHTML = `
+                <div style="padding: 15px 20px; background: #1a1a2e; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #fff; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">${title || '正在播放'}</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="changeLine(0)" id="line0" style="padding: 5px 12px; background: #00d4ff; border: none; color: #000; border-radius: 4px; cursor: pointer; font-size: 12px;">线路1</button>
+                        <button onclick="changeLine(1)" id="line1" style="padding: 5px 12px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路2</button>
+                        <button onclick="changeLine(2)" id="line2" style="padding: 5px 12px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">线路3</button>
+                        <button onclick="closePlayer()" style="padding: 5px 15px; background: #ff4444; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;">✕ 关闭</button>
+                    </div>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <iframe id="videoFrame" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 保存视频URL供切换线路使用
+            window.currentVideoUrl = videoUrl;
+            window.currentLine = 0;
+            
+            // 加载第一个线路
+            loadVideoLine(0);
+        }
+        
+        function loadVideoLine(lineIndex) {
+            const parsers = [
+                'https://jx.m3u8.tv/jiexi/?url=',
+                'https://jsap.attakids.com/?url=',
+                'https://jx.aidouer.net/?url='
+            ];
+            
+            const frame = document.getElementById('videoFrame');
+            if (frame && window.currentVideoUrl) {
+                frame.src = parsers[lineIndex] + encodeURIComponent(window.currentVideoUrl);
+            }
+            
+            // 更新按钮样式
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById('line' + i);
+                if (btn) {
+                    btn.style.background = i === lineIndex ? '#00d4ff' : '#333';
+                    btn.style.color = i === lineIndex ? '#000' : '#fff';
+                }
+            }
+            
+            window.currentLine = lineIndex;
+        }
+        
+        function changeLine(index) {
+            loadVideoLine(index);
+        }
+        
+        function closePlayer() {
+            const modal = document.getElementById('playerOverlay');
+            if (modal) {
+                modal.remove();
+            }
+            window.currentVideoUrl = null;
         }
         
         function closePlayer() {
@@ -586,9 +524,9 @@
             modal.classList.remove('active');
         }
         
-        // 点击模态框外部关闭
-        document.getElementById('playerModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // ESC键关闭播放器
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
                 closePlayer();
             }
         });
