@@ -102,15 +102,10 @@
         
         .sources {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (min-width: 768px) {
-            .sources {
-                grid-template-columns: repeat(6, 1fr);
-            }
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
         }
 
         .source-btn {
@@ -463,6 +458,8 @@
             <button class="source-btn" onclick="switchSource('wolong')">卧龙</button>
             <button class="source-btn" onclick="switchSource('lzm3u8')">量子</button>
             <button class="source-btn" onclick="switchSource('ffzy')">非凡</button>
+            <button class="source-btn" onclick="switchSource('hwba')">华为</button>
+            <button class="source-btn" onclick="switchSource('xlys')">新浪</button>
         </div>
         
         <div id="videoList" class="video-grid">
@@ -503,6 +500,16 @@
                 name: '非凡资源',
                 search: 'http://ffzy1.tv/api.php/provide/vod/?ac=videolist&wd={keyword}',
                 detail: 'http://ffzy1.tv/api.php/provide/vod/?ac=videolist&ids={id}'
+            },
+            hwba: {
+                name: '华为吧',
+                search: 'https://hw8.live/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://hw8.live/api.php/provide/vod/?ac=videolist&ids={id}'
+            },
+            xlys: {
+                name: '新浪资源',
+                search: 'https://api.xinlangapi.com/api.php/provide/vod/?ac=videolist&wd={keyword}',
+                detail: 'https://api.xinlangapi.com/api.php/provide/vod/?ac=videolist&ids={id}'
             }
         };
         
