@@ -294,6 +294,54 @@
             text-align: center;
             color: rgba(255,255,255,0.8);
         }
+
+        .episode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .episode-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .episode-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+        }
+
+        .episode-btn {
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .episode-btn:hover {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+        }
+
+        .episode-btn:active {
+            transform: translateY(0);
+        }
         
         @media (max-width: 768px) {
             .header-content {
@@ -493,31 +541,115 @@
                 alert('暂无播放链接');
                 return;
             }
-            
+
             // 解析播放链接 (格式: 第1集$链接#第2集$链接)
-            const episodes = playUrl.split('#');
-            let videoUrl = '';
-            
-            if (episodes.length > 0) {
-                const firstEpisode = episodes[0];
-                const urlMatch = firstEpisode.match(/\$(.+?)(?:\||$)/);
-                if (urlMatch) {
-                    videoUrl = urlMatch[1];
-                } else {
-                    videoUrl = firstEpisode;
-                }
-            }
-            
-            if (!videoUrl) {
+            const episodes = playUrl.split('#').filter(ep => ep.trim());
+
+            if (episodes.length === 0) {
                 alert('播放链接解析失败');
                 return;
             }
-            
-            // 显示播放器弹窗
-            showPlayerModal(videoUrl, title);
-            
-            // 添加历史记录，支持返回键
-            history.pushState({player: true}, title, '#player');
+
+            // 解析每一集
+            const parsedEpisodes = episodes.map(ep => {
+                const match = ep.match(/^(.+?)\$(.+?)(?:\||$)/);
+                if (match) {
+                    return { name: match[1].trim(), url: match[2].trim() };
+                } else {
+                    return { name: '正片', url: ep.trim() };
+                }
+            }).filter(ep => ep.url);
+
+            if (parsedEpisodes.length === 0) {
+                alert('播放链接解析失败');
+                return;
+            }
+
+            // 如果只有一集，直接播放
+            if (parsedEpisodes.length === 1) {
+                showPlayerModal(parsedEpisodes[0].url, title);
+                history.pushState({player: true}, title, '#player');
+            } else {
+                // 多集显示选择界面
+                showEpisodeSelector(parsedEpisodes, title);
+            }
+        }
+
+        function showEpisodeSelector(episodes, title) {
+            // 移除旧的弹窗
+            const oldModal = document.getElementById('episodeOverlay');
+            if (oldModal) oldModal.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'episodeOverlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                z-index: 9998;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            `;
+
+            const episodesHtml = episodes.map((ep, index) => `
+                <button onclick="playEpisode(${index})" class="episode-btn" data-index="${index}">
+                    ${ep.name}
+                </button>
+            `).join('');
+
+            modal.innerHTML = `
+                <div style="padding: 15px 20px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <button onclick="closeEpisodeSelector()" style="padding: 8px 15px; background: #333; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                            ← 返回
+                        </button>
+                        <span style="color: #fff; font-size: 16px;">${title || '选择集数'}</span>
+                        <span style="color: #888; font-size: 14px;">共 ${episodes.length} 集</span>
+                    </div>
+                </div>
+                <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                    <div class="episode-grid">
+                        ${episodesHtml}
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // 存储集数数据
+            window.currentEpisodes = episodes;
+            window.currentTitle = title;
+
+            history.pushState({episodeSelector: true}, title, '#episodes');
+        }
+
+        function playEpisode(index) {
+            if (!window.currentEpisodes || !window.currentEpisodes[index]) return;
+
+            const episode = window.currentEpisodes[index];
+            window.currentEpisodeIndex = index;
+
+            // 关闭集数选择器
+            const selector = document.getElementById('episodeOverlay');
+            if (selector) selector.remove();
+
+            // 播放选中的集数
+            showPlayerModal(episode.url, `${window.currentTitle} - ${episode.name}`);
+            history.pushState({player: true}, window.currentTitle, '#player');
+        }
+
+        function closeEpisodeSelector() {
+            const modal = document.getElementById('episodeOverlay');
+            if (modal) modal.remove();
+            window.currentEpisodes = null;
+
+            if (location.hash === '#episodes') {
+                history.pushState(null, '', location.pathname + location.search);
+            }
         }
         
         function showPlayerModal(videoUrl, title) {
@@ -647,24 +779,36 @@
             }
             window.currentVideoUrl = null;
 
-            // 如果是点击返回按钮，需要清除 hash 但不触发 popstate
-            if (fromButton && location.hash === '#player') {
+            // 如果有多集，返回集数选择器
+            if (window.currentEpisodes && window.currentEpisodes.length > 1) {
+                showEpisodeSelector(window.currentEpisodes, window.currentTitle);
+            } else if (fromButton && location.hash === '#player') {
+                // 单集情况下，点击返回按钮清除 hash
                 history.pushState(null, '', location.pathname + location.search);
             }
         }
         
-        // ESC键关闭播放器
+        // ESC键关闭播放器/集数选择器
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closePlayer();
+                const player = document.getElementById('playerOverlay');
+                const selector = document.getElementById('episodeOverlay');
+                if (player) {
+                    closePlayer();
+                } else if (selector) {
+                    closeEpisodeSelector();
+                }
             }
         });
-        
-        // 浏览器返回键关闭播放器
+
+        // 浏览器返回键处理
         window.addEventListener('popstate', function(e) {
-            const modal = document.getElementById('playerOverlay');
-            if (modal) {
+            const player = document.getElementById('playerOverlay');
+            const selector = document.getElementById('episodeOverlay');
+            if (player) {
                 closePlayer(false);
+            } else if (selector) {
+                closeEpisodeSelector();
             }
         });
     </script>
