@@ -538,8 +538,8 @@
         async function laksai_searchVideos(keyword) {
             if (!keyword.trim()) return;
             
-            const videoList = document.getElementById('videoList');
-            videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + laksai_sources[laksai_currentSource].name + '...</div></div>';
+            const laksai_videoList = document.getElementById('laksai_videoList');
+            laksai_videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + laksai_sources[laksai_currentSource].name + '...</div></div>';
             
             const searchUrl = laksai_sources[laksai_currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
             let lastError = null;
@@ -568,7 +568,7 @@
                         laksai_displayVideos(jsonData.data.list);
                         return;
                     } else {
-                        videoList.innerHTML = '<div class="loading">未找到相关内容，请尝试：1. 更换关键词 2. 切换其他视频源</div>';
+                        laksai_videoList.innerHTML = '<div class="loading">未找到相关内容，请尝试：1. 更换关键词 2. 切换其他视频源</div>';
                         return;
                     }
                 } catch (error) {
@@ -580,14 +580,14 @@
             
             // 所有代理都失败了
             console.error('All proxies failed:', lastError);
-            videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
+            laksai_videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
         }
         
         function laksai_displayVideos(videos) {
-            const videoList = document.getElementById('videoList');
+            const laksai_videoList = document.getElementById('laksai_videoList');
             
             if (!videos || videos.length === 0) {
-                videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>未找到相关内容</div></div>';
+                laksai_videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>未找到相关内容</div></div>';
                 return;
             }
             
@@ -622,8 +622,8 @@
                 fragment.appendChild(card);
             });
             
-            videoList.innerHTML = '';
-            videoList.appendChild(fragment);
+            laksai_videoList.innerHTML = '';
+            laksai_videoList.appendChild(fragment);
         }
         
         function laksai_getRandomColor() {
