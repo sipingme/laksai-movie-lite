@@ -450,7 +450,7 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn" onclick="laksai_switchSource('wujin')">无尽</button>
+            <button class="source-btn active" onclick="laksai_switchSource('wujin')">无尽</button>
             <button class="source-btn" onclick="laksai_switchSource('ty')">天涯</button>
             <button class="source-btn" onclick="laksai_switchSource('baidu')">百度</button>
             <button class="source-btn" onclick="laksai_switchSource('wolong')">卧龙</button>
@@ -519,9 +519,7 @@
             event.target.classList.add('active');
             
             const keyword = document.getElementById('laksai_searchInput').value;
-            if (keyword) {
-                laksai_searchVideos(keyword);
-            }
+            laksai_searchVideos(keyword || ' ');
         }
         
         function laksai_handleKeyPress(event) {
@@ -939,9 +937,10 @@
             }
         });
 
-        // 页面加载完成后默认搜索
+        // 页面加载完成后默认选中第一个资源并搜索
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('laksai_searchInput').value = '复仇者联盟';
+            // 默认第一个按钮已经是active
             setTimeout(function() {
                 laksai_searchVideos('复仇者联盟');
             }, 100);
