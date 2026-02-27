@@ -539,9 +539,9 @@
             if (!keyword.trim()) return;
             
             const videoList = document.getElementById('videoList');
-            videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + laksai_sources[currentSource].name + '...</div></div>';
+            videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + laksai_sources[laksai_currentSource].name + '...</div></div>';
             
-            const searchUrl = laksai_sources[currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
+            const searchUrl = laksai_sources[laksai_currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
             let lastError = null;
             
             // 依次尝试不同的代理服务
