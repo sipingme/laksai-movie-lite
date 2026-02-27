@@ -701,7 +701,7 @@
 
         function laksai_showEpisodeSelector(episodes, title) {
             // 移除旧的弹窗
-            const oldModal = document.getElementById('episodeOverlay');
+            const oldModal = document.getElementById('laksai_episodeOverlay');
             if (oldModal) oldModal.remove();
 
             const modal = document.createElement('div');
@@ -758,7 +758,7 @@
             window.laksai_currentEpisodeIndex = index;
 
             // 关闭集数选择器
-            const selector = document.getElementById('episodeOverlay');
+            const selector = document.getElementById('laksai_episodeOverlay');
             if (selector) selector.remove();
 
             // 播放选中的集数
@@ -767,7 +767,7 @@
         }
 
         function laksai_closeEpisodeSelector() {
-            const modal = document.getElementById('episodeOverlay');
+            const modal = document.getElementById('laksai_episodeOverlay');
             if (modal) modal.remove();
             window.laksai_currentEpisodes = null;
 
@@ -778,7 +778,7 @@
         
         function laksai_showPlayerModal(videoUrl, title) {
             // 移除旧的弹窗
-            const oldModal = document.getElementById('playerOverlay');
+            const oldModal = document.getElementById('laksai_playerOverlay');
             if (oldModal) oldModal.remove();
             
             // 判断视频类型
@@ -890,7 +890,7 @@
         }
         
         function laksai_closePlayer(fromButton = false) {
-            const modal = document.getElementById('playerOverlay');
+            const modal = document.getElementById('laksai_playerOverlay');
             if (modal) {
                 // 停止所有视频播放
                 const videos = modal.querySelectorAll('video');
@@ -916,8 +916,8 @@
         // ESC键关闭播放器/集数选择器
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const player = document.getElementById('playerOverlay');
-                const selector = document.getElementById('episodeOverlay');
+                const player = document.getElementById('laksai_playerOverlay');
+                const selector = document.getElementById('laksai_episodeOverlay');
                 if (player) {
                     laksai_closePlayer();
                 } else if (selector) {
@@ -928,8 +928,8 @@
 
         // 浏览器返回键处理
         window.addEventListener('popstate', function(e) {
-            const player = document.getElementById('playerOverlay');
-            const selector = document.getElementById('episodeOverlay');
+            const player = document.getElementById('laksai_playerOverlay');
+            const selector = document.getElementById('laksai_episodeOverlay');
             if (player) {
                 laksai_closePlayer(false);
             } else if (selector) {
