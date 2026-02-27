@@ -439,7 +439,7 @@
         <div class="header-content">
             <div class="logo">LaksaiTV</div>
             <div class="search-box">
-                <input type="text" id="laksai_searchInput" placeholder="搜索电影、电视剧..." onkeypress="laksai_laksai_handleKeyPress(event)">
+                <input type="text" id="laksai_searchInput" placeholder="搜索电影、电视剧..." onkeypress="laksai_handleKeyPress(event)">
             </div>
         </div>
     </header>
@@ -450,14 +450,14 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn" onclick="laksai_laksai_switchSource('wujin')">无尽</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('ty')">天涯</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('baidu')">百度</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('wolong')">卧龙</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('lzm3u8')">量子</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('ffzy')">非凡</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('hwba')">华为</button>
-            <button class="source-btn" onclick="laksai_laksai_switchSource('xlys')">新浪</button>
+            <button class="source-btn" onclick="laksai_switchSource('wujin')">无尽</button>
+            <button class="source-btn" onclick="laksai_switchSource('ty')">天涯</button>
+            <button class="source-btn" onclick="laksai_switchSource('baidu')">百度</button>
+            <button class="source-btn" onclick="laksai_switchSource('wolong')">卧龙</button>
+            <button class="source-btn" onclick="laksai_switchSource('lzm3u8')">量子</button>
+            <button class="source-btn" onclick="laksai_switchSource('ffzy')">非凡</button>
+            <button class="source-btn" onclick="laksai_switchSource('hwba')">华为</button>
+            <button class="source-btn" onclick="laksai_switchSource('xlys')">新浪</button>
         </div>
         
         <div id="laksai_videoList" class="video-grid">
@@ -466,7 +466,7 @@
     </main>
     
     <script>
-        let laksai_laksai_currentSource = 'wujin';
+        let laksai_currentSource = 'wujin';
         
         const laksai_sources = {
             wujin: {
@@ -511,7 +511,7 @@
             }
         };
         
-        function laksai_laksai_switchSource(source) {
+        function laksai_switchSource(source) {
             laksai_currentSource = source;
             document.querySelectorAll('.source-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -524,7 +524,7 @@
             }
         }
         
-        function laksai_laksai_handleKeyPress(event) {
+        function laksai_handleKeyPress(event) {
             if (event.key === 'Enter') {
                 laksai_searchVideos(event.target.value);
             }
@@ -537,7 +537,7 @@
             'https://api.allorigins.win/raw?url='
         ];
         
-        async function laksai_laksai_searchVideos(keyword) {
+        async function laksai_searchVideos(keyword) {
             if (!keyword.trim()) return;
             
             const videoList = document.getElementById('videoList');
@@ -585,7 +585,7 @@
             videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
         }
         
-        function laksai_laksai_displayVideos(videos) {
+        function laksai_displayVideos(videos) {
             const videoList = document.getElementById('videoList');
             
             if (!videos || videos.length === 0) {
@@ -628,12 +628,12 @@
             videoList.appendChild(fragment);
         }
         
-        function laksai_laksai_getRandomColor() {
+        function laksai_getRandomColor() {
             const colors = ['#00fa9a', '#20b2aa', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
         
-        function laksai_laksai_playVideo(playUrl, title) {
+        function laksai_playVideo(playUrl, title) {
             if (!playUrl) {
                 alert('暂无播放链接');
                 return;
@@ -701,7 +701,7 @@
             }
         }
 
-        function laksai_laksai_showEpisodeSelector(episodes, title) {
+        function laksai_showEpisodeSelector(episodes, title) {
             // 移除旧的弹窗
             const oldModal = document.getElementById('episodeOverlay');
             if (oldModal) oldModal.remove();
@@ -753,7 +753,7 @@
             history.pushState({episodeSelector: true}, title, '#episodes');
         }
 
-        function laksai_laksai_playEpisode(index) {
+        function laksai_playEpisode(index) {
             if (!window.laksai_currentEpisodes || !window.laksai_currentEpisodes[index]) return;
 
             const episode = window.laksai_currentEpisodes[index];
@@ -768,7 +768,7 @@
             history.pushState({player: true}, window.laksai_currentTitle, '#player');
         }
 
-        function laksai_laksai_closeEpisodeSelector() {
+        function laksai_closeEpisodeSelector() {
             const modal = document.getElementById('episodeOverlay');
             if (modal) modal.remove();
             window.laksai_currentEpisodes = null;
@@ -778,7 +778,7 @@
             }
         }
         
-        function laksai_laksai_showPlayerModal(videoUrl, title) {
+        function laksai_showPlayerModal(videoUrl, title) {
             // 移除旧的弹窗
             const oldModal = document.getElementById('playerOverlay');
             if (oldModal) oldModal.remove();
@@ -855,11 +855,11 @@
             }
         }
         
-        function laksai_laksai_switchParser(index) {
+        function laksai_switchParser(index) {
             laksai_loadParser(index);
         }
         
-        function laksai_laksai_loadParser(index) {
+        function laksai_loadParser(index) {
             if (!window.laksai_currentVideoUrl) return;
             
             const frame = document.getElementById('parserFrame');
@@ -891,7 +891,7 @@
             }, 3000);
         }
         
-        function laksai_laksai_closePlayer(fromButton = false) {
+        function laksai_closePlayer(fromButton = false) {
             const modal = document.getElementById('playerOverlay');
             if (modal) {
                 // 停止所有视频播放
@@ -921,7 +921,7 @@
                 const player = document.getElementById('playerOverlay');
                 const selector = document.getElementById('episodeOverlay');
                 if (player) {
-                    laksai_laksai_closePlayer();
+                    laksai_closePlayer();
                 } else if (selector) {
                     laksai_closeEpisodeSelector();
                 }
