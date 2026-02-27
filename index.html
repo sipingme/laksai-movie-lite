@@ -940,9 +940,11 @@
         });
 
         // 页面加载完成后默认搜索
-        window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('searchInput').value = '复仇者联盟';
-            laksai_searchVideos('复仇者联盟');
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('laksai_searchInput').value = '复仇者联盟';
+            setTimeout(function() {
+                laksai_searchVideos('复仇者联盟');
+            }, 100);
         });
     </script>
 </body>
