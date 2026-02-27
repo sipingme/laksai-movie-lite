@@ -439,7 +439,7 @@
         <div class="header-content">
             <div class="logo">LaksaiTV</div>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索电影、电视剧..." onkeypress="handleKeyPress(event)">
+                <input type="text" id="laksai_searchInput" placeholder="搜索电影、电视剧..." onkeypress="laksai_laksai_handleKeyPress(event)">
             </div>
         </div>
     </header>
@@ -450,25 +450,25 @@
         </div>
         
         <div class="sources">
-            <button class="source-btn" onclick="switchSource('wujin')">无尽</button>
-            <button class="source-btn" onclick="switchSource('ty')">天涯</button>
-            <button class="source-btn" onclick="switchSource('baidu')">百度</button>
-            <button class="source-btn" onclick="switchSource('wolong')">卧龙</button>
-            <button class="source-btn" onclick="switchSource('lzm3u8')">量子</button>
-            <button class="source-btn" onclick="switchSource('ffzy')">非凡</button>
-            <button class="source-btn" onclick="switchSource('hwba')">华为</button>
-            <button class="source-btn" onclick="switchSource('xlys')">新浪</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('wujin')">无尽</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('ty')">天涯</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('baidu')">百度</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('wolong')">卧龙</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('lzm3u8')">量子</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('ffzy')">非凡</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('hwba')">华为</button>
+            <button class="source-btn" onclick="laksai_laksai_switchSource('xlys')">新浪</button>
         </div>
         
-        <div id="videoList" class="video-grid">
+        <div id="laksai_videoList" class="video-grid">
             <div class="loading">输入关键词搜索，或点击上方视频源浏览热门内容</div>
         </div>
     </main>
     
     <script>
-        let currentSource = 'wujin';
+        let laksai_laksai_currentSource = 'wujin';
         
-        const sources = {
+        const laksai_sources = {
             wujin: {
                 name: '无尽资源',
                 search: 'https://api.wujinapi.me/api.php/provide/vod/?ac=videolist&wd={keyword}',
@@ -511,8 +511,8 @@
             }
         };
         
-        function switchSource(source) {
-            currentSource = source;
+        function laksai_laksai_switchSource(source) {
+            laksai_currentSource = source;
             document.querySelectorAll('.source-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -520,36 +520,36 @@
             
             const keyword = document.getElementById('searchInput').value;
             if (keyword) {
-                searchVideos(keyword);
+                laksai_searchVideos(keyword);
             }
         }
         
-        function handleKeyPress(event) {
+        function laksai_laksai_handleKeyPress(event) {
             if (event.key === 'Enter') {
-                searchVideos(event.target.value);
+                laksai_searchVideos(event.target.value);
             }
         }
         
         // 代理服务列表
-        const proxyServices = [
+        const laksai_proxyServices = [
             'https://api.codetabs.com/v1/proxy?quest=',
             'https://corsproxy.io/?',
             'https://api.allorigins.win/raw?url='
         ];
         
-        async function searchVideos(keyword) {
+        async function laksai_laksai_searchVideos(keyword) {
             if (!keyword.trim()) return;
             
             const videoList = document.getElementById('videoList');
-            videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + sources[currentSource].name + '...</div></div>';
+            videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top:10px;">正在搜索 ' + laksai_sources[currentSource].name + '...</div></div>';
             
-            const searchUrl = sources[currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
+            const searchUrl = laksai_sources[currentSource].search.replace('{keyword}', encodeURIComponent(keyword));
             let lastError = null;
             
             // 依次尝试不同的代理服务
-            for (let i = 0; i < proxyServices.length; i++) {
+            for (let i = 0; i < laksai_proxyServices.length; i++) {
                 try {
-                    const proxyUrl = proxyServices[i];
+                    const proxyUrl = laksai_proxyServices[i];
                     const response = await fetch(proxyUrl + encodeURIComponent(searchUrl), {
                         method: 'GET',
                         headers: {
@@ -564,10 +564,10 @@
                     const jsonData = await response.json();
                     
                     if (jsonData && jsonData.list && jsonData.list.length > 0) {
-                        displayVideos(jsonData.list);
+                        laksai_displayVideos(jsonData.list);
                         return; // 成功，直接返回
                     } else if (jsonData && jsonData.data && jsonData.data.list) {
-                        displayVideos(jsonData.data.list);
+                        laksai_displayVideos(jsonData.data.list);
                         return;
                     } else {
                         videoList.innerHTML = '<div class="loading">未找到相关内容，请尝试：1. 更换关键词 2. 切换其他视频源</div>';
@@ -585,7 +585,7 @@
             videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
         }
         
-        function displayVideos(videos) {
+        function laksai_laksai_displayVideos(videos) {
             const videoList = document.getElementById('videoList');
             
             if (!videos || videos.length === 0) {
@@ -599,7 +599,7 @@
             videos.forEach(video => {
                 const card = document.createElement('div');
                 card.className = 'video-card';
-                card.onclick = () => playVideo(video.vod_play_url, video.vod_name);
+                card.onclick = () => laksai_playVideo(video.vod_play_url, video.vod_name);
                 
                 const isM3U8 = video.vod_play_url && video.vod_play_url.includes('m3u8');
                 
@@ -628,12 +628,12 @@
             videoList.appendChild(fragment);
         }
         
-        function getRandomColor() {
+        function laksai_laksai_getRandomColor() {
             const colors = ['#00fa9a', '#20b2aa', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
         
-        function playVideo(playUrl, title) {
+        function laksai_laksai_playVideo(playUrl, title) {
             if (!playUrl) {
                 alert('暂无播放链接');
                 return;
@@ -693,15 +693,15 @@
 
             // 如果只有一集，直接播放
             if (parsedEpisodes.length === 1) {
-                showPlayerModal(parsedEpisodes[0].url, title);
+                laksai_showPlayerModal(parsedEpisodes[0].url, title);
                 history.pushState({player: true}, title, '#player');
             } else {
                 // 多集显示选择界面
-                showEpisodeSelector(parsedEpisodes, title);
+                laksai_showEpisodeSelector(parsedEpisodes, title);
             }
         }
 
-        function showEpisodeSelector(episodes, title) {
+        function laksai_laksai_showEpisodeSelector(episodes, title) {
             // 移除旧的弹窗
             const oldModal = document.getElementById('episodeOverlay');
             if (oldModal) oldModal.remove();
@@ -722,7 +722,7 @@
             `;
 
             const episodesHtml = episodes.map((ep, index) => `
-                <button onclick="playEpisode(${index})" class="episode-btn" data-index="${index}">
+                <button onclick="laksai_playEpisode(${index})" class="episode-btn" data-index="${index}">
                     ${ep.name || `第${index + 1}集`}
                 </button>
             `).join('');
@@ -732,7 +732,7 @@
             modal.innerHTML = `
                 <div style="padding: 15px 20px; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <button onclick="closeEpisodeSelector()" style="padding: 8px 15px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                        <button onclick="laksai_closeEpisodeSelector()" style="padding: 8px 15px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
                             ← 返回
                         </button>
                         <span style="color: #e0e0e0; font-size: 16px;">${title || '选择集数'}</span>
@@ -747,38 +747,38 @@
             document.body.appendChild(modal);
 
             // 存储集数数据
-            window.currentEpisodes = episodes;
-            window.currentTitle = title;
+            window.laksai_currentEpisodes = episodes;
+            window.laksai_currentTitle = title;
 
             history.pushState({episodeSelector: true}, title, '#episodes');
         }
 
-        function playEpisode(index) {
-            if (!window.currentEpisodes || !window.currentEpisodes[index]) return;
+        function laksai_laksai_playEpisode(index) {
+            if (!window.laksai_currentEpisodes || !window.laksai_currentEpisodes[index]) return;
 
-            const episode = window.currentEpisodes[index];
-            window.currentEpisodeIndex = index;
+            const episode = window.laksai_currentEpisodes[index];
+            window.laksai_currentEpisodeIndex = index;
 
             // 关闭集数选择器
             const selector = document.getElementById('episodeOverlay');
             if (selector) selector.remove();
 
             // 播放选中的集数
-            showPlayerModal(episode.url, `${window.currentTitle} - ${episode.name}`);
-            history.pushState({player: true}, window.currentTitle, '#player');
+            laksai_showPlayerModal(episode.url, `${window.laksai_currentTitle} - ${episode.name}`);
+            history.pushState({player: true}, window.laksai_currentTitle, '#player');
         }
 
-        function closeEpisodeSelector() {
+        function laksai_laksai_closeEpisodeSelector() {
             const modal = document.getElementById('episodeOverlay');
             if (modal) modal.remove();
-            window.currentEpisodes = null;
+            window.laksai_currentEpisodes = null;
 
             if (location.hash === '#episodes') {
                 history.pushState(null, '', location.pathname + location.search);
             }
         }
         
-        function showPlayerModal(videoUrl, title) {
+        function laksai_laksai_showPlayerModal(videoUrl, title) {
             // 移除旧的弹窗
             const oldModal = document.getElementById('playerOverlay');
             if (oldModal) oldModal.remove();
@@ -805,7 +805,7 @@
             modal.innerHTML = `
                 <div style="padding: 15px 20px; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <button onclick="closePlayer(true)" style="padding: 8px 15px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; transition: all 0.3s;">
+                        <button onclick="laksai_closePlayer(true)" style="padding: 8px 15px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; transition: all 0.3s;">
                             ← 返回
                         </button>
                         <span style="color: #e0e0e0; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw;">${title || '正在播放'}</span>
@@ -813,21 +813,21 @@
                     <div style="display: flex; gap: 10px; align-items: center;">
                         ${(!isM3U8 && !isMP4) ? `
                         <span style="color: #666; font-size: 12px;">线路:</span>
-                        <button onclick="switchParser(0)" id="parser0" style="padding: 6px 14px; background: linear-gradient(135deg, #00fa9a, #20b2aa); border: none; color: #fff; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
-                        <button onclick="switchParser(1)" id="parser1" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路2</button>
-                        <button onclick="switchParser(2)" id="parser2" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路3</button>
+                        <button onclick="laksai_switchParser(0)" id="laksai_parser0" style="padding: 6px 14px; background: linear-gradient(135deg, #00fa9a, #20b2aa); border: none; color: #fff; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: bold;">线路1</button>
+                        <button onclick="laksai_switchParser(1)" id="laksai_parser1" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路2</button>
+                        <button onclick="laksai_switchParser(2)" id="laksai_parser2" style="padding: 6px 14px; background: #141414; border: 1px solid #333; color: #999; border-radius: 2px; cursor: pointer; font-size: 12px;">线路3</button>
                         ` : ''}
                     </div>
                 </div>
                 <div style="flex: 1; background: #000; display: flex; align-items: center; justify-content: center; position: relative;">
                     ${(isM3U8 || isMP4) ? `
-                        <video id="nativePlayer" controls autoplay playsinline style="width: 100%; height: 100%; max-height: 100vh;">
+                        <video id="laksai_nativePlayer" controls autoplay playsinline style="width: 100%; height: 100%; max-height: 100vh;">
                             <source src="${videoUrl}" type="${isM3U8 ? 'application/x-mpegURL' : 'video/mp4'}">
                             您的浏览器不支持视频播放
                         </video>
                     ` : `
-                        <iframe id="parserFrame" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
-                        <div id="parserLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 14px; background: rgba(10,10,10,0.95); padding: 20px; border: 1px solid #333;">加载中...</div>
+                        <iframe id="laksai_parserFrame" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+                        <div id="laksai_parserLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 14px; background: rgba(10,10,10,0.95); padding: 20px; border: 1px solid #333;">加载中...</div>
                     `}
                 </div>
             `;
@@ -836,14 +836,14 @@
             
             // 如果是外部链接，加载解析器
             if (!isM3U8 && !isMP4) {
-                window.currentVideoUrl = videoUrl;
-                window.currentParser = 0;
-                window.parserList = [
+                window.laksai_currentVideoUrl = videoUrl;
+                window.laksai_currentParser = 0;
+                window.laksai_parserList = [
                     'https://jx.m3u8.tv/jiexi/?url=',
                     'https://jsap.attakids.com/?url=',
                     'https://jx.aidouer.net/?url='
                 ];
-                loadParser(0);
+                laksai_loadParser(0);
             } else {
                 // 原生播放，尝试自动播放
                 const video = document.getElementById('nativePlayer');
@@ -855,12 +855,12 @@
             }
         }
         
-        function switchParser(index) {
-            loadParser(index);
+        function laksai_laksai_switchParser(index) {
+            laksai_loadParser(index);
         }
         
-        function loadParser(index) {
-            if (!window.currentVideoUrl) return;
+        function laksai_laksai_loadParser(index) {
+            if (!window.laksai_currentVideoUrl) return;
             
             const frame = document.getElementById('parserFrame');
             const loading = document.getElementById('parserLoading');
@@ -876,13 +876,13 @@
                 }
             }
             
-            window.currentParser = index;
+            window.laksai_currentParser = index;
             
             // 显示加载
             if (loading) loading.style.display = 'block';
             
             // 加载解析页面
-            const parserUrl = window.parserList[index] + encodeURIComponent(window.currentVideoUrl);
+            const parserUrl = window.laksai_parserList[index] + encodeURIComponent(window.laksai_currentVideoUrl);
             frame.src = parserUrl;
             
             // 3秒后隐藏加载提示
@@ -891,7 +891,7 @@
             }, 3000);
         }
         
-        function closePlayer(fromButton = false) {
+        function laksai_laksai_closePlayer(fromButton = false) {
             const modal = document.getElementById('playerOverlay');
             if (modal) {
                 // 停止所有视频播放
@@ -904,11 +904,11 @@
                 iframes.forEach(f => f.src = '');
                 modal.remove();
             }
-            window.currentVideoUrl = null;
+            window.laksai_currentVideoUrl = null;
 
             // 如果有多集，返回集数选择器
-            if (window.currentEpisodes && window.currentEpisodes.length > 1) {
-                showEpisodeSelector(window.currentEpisodes, window.currentTitle);
+            if (window.laksai_currentEpisodes && window.laksai_currentEpisodes.length > 1) {
+                laksai_showEpisodeSelector(window.laksai_currentEpisodes, window.laksai_currentTitle);
             } else if (fromButton && location.hash === '#player') {
                 // 单集情况下，点击返回按钮清除 hash
                 history.pushState(null, '', location.pathname + location.search);
@@ -921,9 +921,9 @@
                 const player = document.getElementById('playerOverlay');
                 const selector = document.getElementById('episodeOverlay');
                 if (player) {
-                    closePlayer();
+                    laksai_laksai_closePlayer();
                 } else if (selector) {
-                    closeEpisodeSelector();
+                    laksai_closeEpisodeSelector();
                 }
             }
         });
@@ -933,9 +933,9 @@
             const player = document.getElementById('playerOverlay');
             const selector = document.getElementById('episodeOverlay');
             if (player) {
-                closePlayer(false);
+                laksai_closePlayer(false);
             } else if (selector) {
-                closeEpisodeSelector();
+                laksai_closeEpisodeSelector();
             }
         });
     </script>
