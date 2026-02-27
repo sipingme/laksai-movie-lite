@@ -319,6 +319,12 @@
             font-size: 1rem;
         }
 
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
         @media (max-width: 480px) {
             .loading {
                 padding: 2rem 1rem;
@@ -568,7 +574,7 @@
                         laksai_displayVideos(jsonData.data.list);
                         return;
                     } else {
-                        laksai_videoList.innerHTML = '<div class="loading">未找到相关内容，请尝试：1. 更换关键词 2. 切换其他视频源</div>';
+                        laksai_videoList.innerHTML = '<div class="empty-state"><div style="font-size: 48px; margin-bottom: 16px;">🔍</div><div style="color: #666; font-size: 16px;">没有找到相关内容</div><div style="color: #444; font-size: 14px; margin-top: 8px;">请尝试更换关键词或切换其他资源</div></div>';
                         return;
                     }
                 } catch (error) {
@@ -579,15 +585,14 @@
             }
             
             // 所有代理都失败了
-            console.error('All proxies failed:', lastError);
-            laksai_videoList.innerHTML = '<div class="loading">搜索失败，可能原因：<br>1. 网络连接问题<br>2. 视频源暂时不可用<br>3. 请尝试切换其他视频源<br><br>错误信息：' + (lastError ? lastError.message : '未知错误') + '</div>';
+            laksai_videoList.innerHTML = '<div class="empty-state"><div style="font-size: 48px; margin-bottom: 16px;">📡</div><div style="color: #666; font-size: 16px;">搜索服务暂时不可用</div><div style="color: #444; font-size: 14px; margin-top: 8px;">请检查网络或稍后重试</div></div>';
         }
         
         function laksai_displayVideos(videos) {
             const laksai_videoList = document.getElementById('laksai_videoList');
             
             if (!videos || videos.length === 0) {
-                laksai_videoList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>未找到相关内容</div></div>';
+                laksai_videoList.innerHTML = '<div class="empty-state"><div style="font-size: 48px; margin-bottom: 16px;">📭</div><div style="color: #666; font-size: 16px;">没有找到相关内容</div><div style="color: #444; font-size: 14px; margin-top: 8px;">请尝试更换关键词或切换其他资源</div></div>';
                 return;
             }
             
