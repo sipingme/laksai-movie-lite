@@ -938,6 +938,12 @@
                 laksai_closeEpisodeSelector();
             }
         });
+
+        // 页面加载完成后默认搜索
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('searchInput').value = '复仇者联盟';
+            laksai_searchVideos('复仇者联盟');
+        });
     </script>
 </body>
 </html>
